@@ -1,5 +1,6 @@
 # temp. editor backups:
 *~
+*.swp
 
 # generated content / project files:
 .project
