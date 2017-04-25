@@ -31,6 +31,9 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include <sstream>
+#include <fstream>
+
 #include <octomap/octomap.h>
 #include <octomap/OcTree.h>
 
@@ -49,32 +52,66 @@ void print_query_info(point3d query, OcTreeNode* node) {
 int main(int argc, char** argv) {
 
   cout << endl;
-  cout << "generating example map" << endl;
+  cout << "Loading point cloud from file" << endl;
 
+  // Open file
+  string fname;
+  string line;
+  fname = "/home/ross/Desktop/cld.log";
+  ifstream infile(fname.c_str());
+
+  // Create point cloud
+  Pointcloud* cld = new Pointcloud();
+  float x, y, z;
+
+  // Read every line in file
+  while (true)
+  {
+    getline(infile, line);
+    if( infile.good() && !infile.eof())
+    {
+      stringstream sline;
+      sline << line;
+      // Get floats from lines
+      sline >> x >> y >> z;
+      // Add to pointcloud
+      cld->push_back(x, y, z);
+    }
+    else break;
+  }
+
+  // Prepare tree
   OcTree tree (0.1);  // create empty tree with resolution 0.1
+  point3d origin (0, 0, 0);
+  // Default args
+  double maxrange = -1.0;
+  bool lazy_eval = false;
+  bool discretize = false;
 
+  // Add cloud to tree
+  tree.insertPointCloud(cld, origin, maxrange, lazy_eval, discretize);
 
-  // insert some measurements of occupied cells
-
-  for (int x=-20; x<20; x++) {
-    for (int y=-20; y<20; y++) {
-      for (int z=-20; z<20; z++) {
-        point3d endpoint ((float) x*0.05f, (float) y*0.05f, (float) z*0.05f);
-        tree.updateNode(endpoint, true); // integrate 'occupied' measurement
-      }
-    }
-  }
-
-  // insert some measurements of free cells
-
-  for (int x=-30; x<30; x++) {
-    for (int y=-30; y<30; y++) {
-      for (int z=-30; z<30; z++) {
-        point3d endpoint ((float) x*0.02f-1.0f, (float) y*0.02f-1.0f, (float) z*0.02f-1.0f);
-        tree.updateNode(endpoint, false);  // integrate 'free' measurement
-      }
-    }
-  }
+//  // insert some measurements of occupied cells
+//
+//  for (int x=-20; x<20; x++) {
+//    for (int y=-20; y<20; y++) {
+//      for (int z=-20; z<20; z++) {
+//        point3d endpoint ((float) x*0.05f, (float) y*0.05f, (float) z*0.05f);
+//        tree.updateNode(endpoint, true); // integrate 'occupied' measurement
+//      }
+//    }
+//  }
+//
+//  // insert some measurements of free cells
+//
+//  for (int x=-30; x<30; x++) {
+//    for (int y=-30; y<30; y++) {
+//      for (int z=-30; z<30; z++) {
+//        point3d endpoint ((float) x*0.02f-1.0f, (float) y*0.02f-1.0f, (float) z*0.02f-1.0f);
+//        tree.updateNode(endpoint, false);  // integrate 'free' measurement
+//      }
+//    }
+//  }
 
   cout << endl;
   cout << "performing some queries:" << endl;
