@@ -80,8 +80,10 @@ int main(int argc, char** argv) {
     else break;
   }
 
+  cout << "Done. Adding scan to octree..." << endl;
+
   // Prepare tree
-  OcTree tree (0.1);  // create empty tree with resolution 0.1
+  OcTree tree (0.05);  // create empty tree with resolution 0.1
   point3d origin (0, 0, 0);
   // Default args
   double maxrange = -1.0;
