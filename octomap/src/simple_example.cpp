@@ -33,6 +33,7 @@
 
 #include <sstream>
 #include <fstream>
+#include <ctime>
 
 #include <octomap/octomap.h>
 #include <octomap/OcTree.h>
@@ -50,6 +51,9 @@ void print_query_info(point3d query, OcTreeNode* node) {
 }
 
 int main(int argc, char** argv) {
+  // For evaluating computation times
+  time_t tic, toc;
+  double dt_seconds;
 
   cout << endl;
   cout << "Loading point cloud from file" << endl;
@@ -63,6 +67,8 @@ int main(int argc, char** argv) {
   // Create point cloud
   Pointcloud* cld = new Pointcloud();
   float x, y, z;
+
+  tic = time(NULL);
 
   // Read every line in file
   while (true)
@@ -80,7 +86,11 @@ int main(int argc, char** argv) {
     else break;
   }
 
-  cout << "Done. Adding scan to octree..." << endl;
+  // Evaluate time
+  toc = time(NULL);
+  dt_seconds = difftime(toc, tic);
+  printf("Done. %f seconds to load data from file.\n", dt_seconds);
+  cout << "Adding scan to octree..." << endl;
 
   // Prepare tree
   OcTree tree (0.1);  // create empty tree with resolution 0.1
@@ -90,8 +100,12 @@ int main(int argc, char** argv) {
   bool lazy_eval = false;
   bool discretize = false;
 
+  tic = time(NULL);
   // Add cloud to tree
   tree.insertPointCloud(cld, origin, maxrange, lazy_eval, discretize);
+  toc = time(NULL);
+  dt_seconds = difftime(toc, tic);
+  printf("Done. %f seconds to add %lu points to tree.\n", dt_seconds, cld->size());
 
 //  // insert some measurements of occupied cells
 //
