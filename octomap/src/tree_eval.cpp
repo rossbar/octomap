@@ -112,11 +112,13 @@ int main(int argc, char** argv) {
   printf("Time to set up iterators: %f s\n", dt_seconds);
   // Set up data containers
   point3d center;
+  unsigned int timestamp;
   // Traverse the whole tree
   tic = get_wall_time();
   for(it; it != end; ++it)
   {
     center = it.getCoordinate();
+    timestamp = it->getTimestamp();
   }
   toc = get_wall_time();
   dt_seconds = toc - tic;
