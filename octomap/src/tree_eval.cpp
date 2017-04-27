@@ -38,6 +38,7 @@
 
 #include <octomap/octomap.h>
 #include <octomap/OcTree.h>
+#include <octomap/OcTreeStamped.h>
 
 using namespace std;
 using namespace octomap;
@@ -62,7 +63,7 @@ int main(int argc, char** argv) {
   ifstream infile(fname.c_str());
 
   // Prepare tree
-  OcTree tree (0.1);  // create empty tree with resolution 0.1
+  OcTreeStamped tree (0.1);  // create empty tree with resolution 0.1
 
   // Load tree
   tic = get_wall_time();
@@ -104,8 +105,8 @@ int main(int argc, char** argv) {
   cout << endl << endl;
   tic = get_wall_time();
   // Set up iterator
-  OcTree::leaf_iterator it = tree.begin_leafs();
-  OcTree::leaf_iterator end = tree.end_leafs();
+  OcTreeStamped::leaf_iterator it = tree.begin_leafs();
+  OcTreeStamped::leaf_iterator end = tree.end_leafs();
   toc = get_wall_time();
   dt_seconds = toc - tic;
   printf("Time to set up iterators: %f s\n", dt_seconds);
