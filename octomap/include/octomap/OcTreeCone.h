@@ -31,45 +31,35 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef OCTOMAP_OCTREE_STAMPED_H
-#define OCTOMAP_OCTREE_STAMPED_H
-
+#ifndef OCTOMAP_OCTREE_CONE_H
+#define OCTOMAP_OCTREE_CONE_H
 
 #include <octomap/OcTreeNode.h>
 #include <octomap/OccupancyOcTreeBase.h>
-#include <ctime>
 
 namespace octomap {
   
   // node definition
-  class OcTreeNodeCone : public OcTreeNode {    
+  class OcTreeConeNode : public OcTreeNode {    
 
   public:
-    OcTreeNodeCone() : OcTreeNode(), cv_prob(0) {}
+    OcTreeConeNode() : OcTreeNode(), cv_prob(0) {}
 
     // copy constructor
-    OcTreeNodeCone(const OcTreeNodeCone& rhs) : OcTreeNode(rhs), cv_prob(rhs.cv_prob) {}
+    OcTreeConeNode(const OcTreeConeNode& rhs) : OcTreeNode(rhs), cv_prob(rhs.cv_prob) {}
 
-    bool operator==(const OcTreeNodeCone& rhs) const{
+    bool operator==(const OcTreeConeNode& rhs) const{
       return (rhs.value == value && rhs.cv_prob == cv_prob);
     }
     
-    void copyData(const OcTreeNodeCone& from){
+    void copyData(const OcTreeConeNode& from){
       OcTreeNode::copyData(from);
       cv_prob = from.getConeVoxelProbability();
     }
       
-    // timestamp
+    // Cone voxel prob
     inline unsigned int getConeVoxelProbability() const { return cv_prob; }
-    //TODO: Placeholder method for computing cone voxel probability
-    inline void updateConeVoxelProbability() { cv_prob = cv_prob + 1;}
     inline void setConeVoxelProbability(double cv) {this->cv_prob = cv_prob; }
-
-    // update occupancy and timesteps of inner nodes 
-    inline void updateOccupancyChildren() {      
-      this->setLogOdds(this->getMaxChildLogOdds());  // conservative
-      updateConeVoxelProbability();
-    }
 
   protected:
     double cv_prob;
@@ -77,7 +67,7 @@ namespace octomap {
 
 
   // tree definition
-  class OcTreeCone : public OccupancyOcTreeBase <OcTreeNodeCone> {    
+  class OcTreeCone : public OccupancyOcTreeBase <OcTreeConeNode> {    
 
   public:
     /// Default constructor, sets resolution of leafs
@@ -88,14 +78,6 @@ namespace octomap {
     OcTreeCone* create() const {return new OcTreeCone(resolution); }
 
     std::string getTreeType() const {return "OcTreeCone";}
-
-    //! \return timestamp of last update
-//    unsigned int getLastUpdateTime();
-//
-//    void degradeOutdatedNodes(unsigned int time_thres);
-//    
-//    virtual void updateNodeLogOdds(OcTreeNodeCone* node, const float& update) const;
-//    void integrateMissNoTime(OcTreeNodeCone* node) const;
 
   protected:
     /**

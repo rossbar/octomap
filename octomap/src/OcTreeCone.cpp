@@ -36,38 +36,9 @@
 namespace octomap {
 
   OcTreeCone::OcTreeCone(double resolution)
-   : OccupancyOcTreeBase<OcTreeNodeCone>(resolution) {
+   : OccupancyOcTreeBase<OcTreeConeNode>(resolution) {
     ocTreeConeMemberInit.ensureLinking();
   }
-
-//  unsigned int OcTreeCone::getLastUpdateTime() {
-//    // this value is updated whenever inner nodes are 
-//    // updated using updateOccupancyChildren()
-//    return root->getTimestamp();
-//  }
-//
-//  void OcTreeCone::degradeOutdatedNodes(unsigned int time_thres) {
-//    unsigned int query_time = (unsigned int) time(NULL); 
-//
-//    for(leaf_iterator it = this->begin_leafs(), end=this->end_leafs(); 
-//        it!= end; ++it) {
-//      if ( this->isNodeOccupied(*it) 
-//           && ((query_time - it->getTimestamp()) > time_thres) ) {
-//        integrateMissNoTime(&*it);
-//      }
-//    }
-//  }  
-
-//  void OcTreeCone::updateNodeLogOdds(OcTreeNodeCone* node, const float& update) const {
-//    OccupancyOcTreeBase<OcTreeNodeCone>::updateNodeLogOdds(node, update);
-//    node->updateTimestamp();
-//  }
-
-//  void OcTreeCone::integrateMissNoTime(OcTreeNodeCone* node) const{
-//    OccupancyOcTreeBase<OcTreeNodeCone>::updateNodeLogOdds(node, prob_miss_log);
-//  }
-//
-//  OcTreeCone::StaticMemberInitializer OcTreeCone::ocTreeStampedMemberInit;
 
 } // end namespace
 
