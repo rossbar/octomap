@@ -58,8 +58,9 @@ namespace octomap {
     }
       
     // Cone voxel prob
-    inline unsigned int getConeVoxelProbability() const { return cv_prob; }
-    inline void setConeVoxelProbability(double cv) {this->cv_prob = cv_prob; }
+    inline double getConeVoxelProbability() const { return cv_prob; }
+    inline void setConeVoxelProbability(double cv) { cv_prob = cv; }
+    inline void updateConeVoxelProbability(double cv) { cv_prob += cv; }
 
   protected:
     double cv_prob;
