@@ -34,6 +34,7 @@
 #ifndef OCTOMAP_OCTREE_CONE_H
 #define OCTOMAP_OCTREE_CONE_H
 
+#include <iostream>
 #include <octomap/OcTreeNode.h>
 #include <octomap/OccupancyOcTreeBase.h>
 
@@ -47,6 +48,10 @@ namespace octomap {
 
     // copy constructor
     OcTreeConeNode(const OcTreeConeNode& rhs) : OcTreeNode(rhs), cv_prob(rhs.cv_prob) {}
+
+    // File I/O
+    std::istream& readData(std::istream &s);
+    std::ostream& writeData(std::ostream &s) const;
 
     bool operator==(const OcTreeConeNode& rhs) const{
       return (rhs.value == value && rhs.cv_prob == cv_prob);

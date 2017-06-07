@@ -40,6 +40,21 @@ namespace octomap {
     ocTreeConeMemberInit.ensureLinking();
   }
 
+  // File I/O
+  std::istream& OcTreeConeNode::readData(std::istream &s)
+  {
+    s.read((char*) &value,   sizeof(value));   // Read occupancy value
+    s.read((char*) &cv_prob, sizeof(cv_prob)); // Read cone voxel prob.
+    return s;
+  }
+
+  std::ostream& OcTreeConeNode::writeData(std::ostream &s) const
+  {
+    s.write((const char*) &value,   sizeof(value));   // Write occupancy
+    s.write((const char*) &cv_prob, sizeof(cv_prob)); // Write cv probability
+    return s;
+  }
+
   double OcTreeCone::sum()
   {
     double cvsum = 0;
