@@ -40,5 +40,17 @@ namespace octomap {
     ocTreeConeMemberInit.ensureLinking();
   }
 
+  double OcTreeCone::sum()
+  {
+    double cvsum = 0;
+    for(leaf_iterator it = this->begin_leafs(), end=this->end_leafs(); 
+        it != end; ++it)
+    {
+      cvsum += it->getConeVoxelProbability();
+    }
+    return cvsum;
+  }
+    
+
 } // end namespace
 

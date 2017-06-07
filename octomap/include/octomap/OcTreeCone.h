@@ -80,6 +80,9 @@ namespace octomap {
 
     std::string getTreeType() const {return "OcTreeCone";}
 
+    // Return the sum of the cone voxel probability over all nodes
+    double sum();
+
   protected:
     /**
      * Static member object which ensures that this OcTree's prototype
