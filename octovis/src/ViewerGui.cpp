@@ -28,6 +28,7 @@
 
 #include <octovis/ViewerGui.h>
 #include <octovis/ColorOcTreeDrawer.h>
+#include <octovis/ConeOcTreeDrawer.h>
 #include <octomap/MapCollection.h>
 
 
@@ -188,7 +189,12 @@ void ViewerGui::addOctree(octomap::AbstractOcTree* tree, int id, octomap::pose6d
         }
         else if (dynamic_cast<ColorOcTree*>(tree)) {
           r->octree_drawer = new ColorOcTreeDrawer();
-        } else{
+        } 
+        else if (dynamic_cast<OcTreeCone*>(tree))
+        {
+          r->octree_drawer = new ConeOcTreeDrawer();
+        }
+        else{
           OCTOMAP_ERROR("Could not create drawer for tree type %s\n", tree->getTreeType().c_str());
         }
 
@@ -212,7 +218,12 @@ void ViewerGui::addOctree(octomap::AbstractOcTree* tree, int id, octomap::pose6d
         }
         else if (dynamic_cast<ColorOcTree*>(tree)) {
           otr.octree_drawer = new ColorOcTreeDrawer();
-        } else{
+        } 
+        else if (dynamic_cast<OcTreeCone*>(tree))
+        {
+          otr.octree_drawer = new ConeOcTreeDrawer();
+        }
+        else{
           OCTOMAP_ERROR("Could not create drawer for tree type %s\n", tree->getTreeType().c_str());
         }
         otr.octree = tree;
@@ -500,6 +511,12 @@ void ViewerGui::openOcTree(){
       // map color and height map share the same color array and QAction
       ui.actionHeight_map->setText ("Map color");  // rename QAction in Menu
       this->on_actionHeight_map_toggled(true); // enable color view
+      ui.actionHeight_map->setChecked(true);
+    }
+    else if (tree->getTreeType() == "OcTreeCone")
+    {
+      ui.actionHeight_map->setText("Cone-voxel probability");
+      this->on_actionHeight_map_toggled(true);
       ui.actionHeight_map->setChecked(true);
     }
   }
