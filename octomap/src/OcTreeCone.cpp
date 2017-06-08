@@ -92,5 +92,7 @@ namespace octomap {
     return cvmin;
   }
 
+  OcTreeCone::StaticMemberInitializer OcTreeCone::ocTreeConeMemberInit;
+
 } // end namespace
 

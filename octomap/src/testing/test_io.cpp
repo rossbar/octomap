@@ -4,6 +4,7 @@
 #include <octomap/OcTree.h>
 #include <octomap/ColorOcTree.h>
 #include <octomap/OcTreeStamped.h>
+#include <octomap/OcTreeCone.h>
 #include <octomap/math/Utils.h>
 #include "testing.h"
  
@@ -145,6 +146,34 @@ int main(int argc, char** argv) {
     EXPECT_TRUE(colorNode);
     EXPECT_EQ(colorNode->getColor(), color_red);
     delete readColorTree;
+  }
+
+  // Test for tree headers and IO factory registry (cone)
+  {
+    std::cout << "Testing OcTreeCone...\n";
+
+    double res = 0.02;
+    std::string filenameCone = "test_io_cone_file.ot";
+    OcTreeCone coneTree(res);
+    EXPECT_EQ(coneTree.getTreeType(), "OcTreeCone");
+//    ColorOcTreeNode* colorNode = colorTree.updateNode(point3d(0.0, 0.0, 0.0), true);
+//    ColorOcTreeNode::Color color_red(255, 0, 0);
+//    colorNode->setColor(color_red);
+//    colorTree.setNodeColor(0.0, 0.0, 0.0, 255, 0, 0);
+//    colorTree.updateNode(point3d(0.1f, 0.1f, 0.1f), true);
+//    colorTree.setNodeColor(0.1f, 0.1f, 0.1f, 0, 0, 255);
+
+    EXPECT_TRUE(coneTree.write(filenameCone));
+    AbstractOcTree* readTreeAbstract = AbstractOcTree::read(filenameCone);
+    EXPECT_TRUE(readTreeAbstract);
+    EXPECT_EQ(coneTree.getTreeType(),  readTreeAbstract->getTreeType());
+    OcTreeCone* readConeTree = dynamic_cast<OcTreeCone*>(readTreeAbstract);
+    EXPECT_TRUE(readConeTree);
+    EXPECT_TRUE(coneTree == *readConeTree);
+//    colorNode = colorTree.search(0.0, 0.0, 0.0);
+//    EXPECT_TRUE(colorNode);
+//    EXPECT_EQ(colorNode->getColor(), color_red);
+    delete readConeTree;
   }
 
   // Test for tree headers and IO factory registry (stamped)
