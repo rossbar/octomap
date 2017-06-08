@@ -55,6 +55,16 @@ namespace octomap {
     return s;
   }
 
+  // Multiply cv_prob by a scalar value
+  void OcTreeCone::scale(double s)
+  {
+    for(leaf_iterator it = this->begin_leafs(), end=this->end_leafs();
+        it != end; ++it)
+    {
+      it->setConeVoxelProbability(s * it->getConeVoxelProbability());
+    }
+  }
+
   double OcTreeCone::sum()
   {
     double cvsum = 0;

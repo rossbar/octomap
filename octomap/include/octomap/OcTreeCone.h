@@ -85,6 +85,9 @@ namespace octomap {
 
     std::string getTreeType() const {return "OcTreeCone";}
 
+    // Scale cv_prob
+    void scale(double s);
+
     // Return the sum of the cone voxel probability over all nodes
     double sum();
 
