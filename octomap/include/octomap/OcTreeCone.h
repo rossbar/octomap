@@ -59,13 +59,13 @@ namespace octomap {
     
     void copyData(const OcTreeConeNode& from){
       OcTreeNode::copyData(from);
-      cv_prob = from.getConeVoxelProbability();
+      this->cv_prob = from.getConeVoxelProbability();
     }
       
     // Cone voxel prob
     inline double getConeVoxelProbability() const { return cv_prob; }
-    inline void setConeVoxelProbability(double cv) { cv_prob = cv; }
-    inline void updateConeVoxelProbability(double cv) { cv_prob += cv; }
+    inline void setConeVoxelProbability(double cv) { this->cv_prob = cv; }
+    inline void updateConeVoxelProbability(double cv) { this->cv_prob += cv; }
 
   protected:
     double cv_prob;
@@ -87,6 +87,10 @@ namespace octomap {
 
     // Return the sum of the cone voxel probability over all nodes
     double sum();
+
+    // Return the min/max of the cone-voxel probability over all nodes
+    double min();
+    double max();
 
   protected:
     /**

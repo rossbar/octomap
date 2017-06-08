@@ -65,7 +65,32 @@ namespace octomap {
     }
     return cvsum;
   }
+
+  double OcTreeCone::max()
+  {
+    double cv;
+    double cvmax = 0;
+    for(leaf_iterator it = this->begin_leafs(), end=this->end_leafs();
+        it != end; ++it)
+    {
+      cv = it->getConeVoxelProbability();
+      if(cv > cvmax){ cvmax = cv; }
+    }
+    return cvmax;
+  }
     
+  double OcTreeCone::min()
+  {
+    double cv;
+    double cvmin = 0;
+    for(leaf_iterator it = this->begin_leafs(), end=this->end_leafs();
+        it != end; ++it)
+    {
+      cv = it->getConeVoxelProbability();
+      if(cv < cvmin){ cvmin = cv; }
+    }
+    return cvmin;
+  }
 
 } // end namespace
 
