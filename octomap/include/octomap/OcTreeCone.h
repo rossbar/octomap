@@ -92,6 +92,9 @@ namespace octomap {
     double min();
     double max();
 
+    // Normalize the cvp so that the sum of cvp over all nodes == 1
+    void normalize();
+
   protected:
     /**
      * Static member object which ensures that this OcTree's prototype

@@ -92,6 +92,17 @@ namespace octomap {
     return cvmin;
   }
 
+  void OcTreeCone::normalize()
+  {
+    double cvsum = this->sum();
+    for(leaf_iterator it = this->begin_leafs(), end=this->end_leafs();
+        it != end; ++it)
+    {
+      it->setConeVoxelProbability(it->getConeVoxelProbability() / cvsum);
+    }
+    return;
+  }
+
   OcTreeCone::StaticMemberInitializer OcTreeCone::ocTreeConeMemberInit;
 
 } // end namespace
