@@ -73,7 +73,7 @@ namespace octomap {
       cvsum /= c;
       return cvsum;
     }
-    else { return 0; }
+    else { return this->getConeVoxelProbability(); }
   }
 
   void OcTreeConeNode::updateCVProbChildren()
