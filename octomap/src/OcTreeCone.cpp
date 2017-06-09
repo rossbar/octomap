@@ -35,10 +35,7 @@
 
 namespace octomap {
 
-  OcTreeCone::OcTreeCone(double resolution)
-   : OccupancyOcTreeBase<OcTreeConeNode>(resolution) {
-    ocTreeConeMemberInit.ensureLinking();
-  }
+/* --------------------- NODE IMPLEMENTATION --------------------------------*/
 
   // File I/O
   std::istream& OcTreeConeNode::readData(std::istream &s)
@@ -53,6 +50,114 @@ namespace octomap {
     s.write((const char*) &value,   sizeof(value));   // Write occupancy
     s.write((const char*) &cv_prob, sizeof(cv_prob)); // Write cv probability
     return s;
+  }
+
+  double OcTreeConeNode::getAverageChildCVProb() const
+  {
+    double cvsum = 0;
+    int c = 0;
+    if (children != NULL)
+    {
+      for(int i = 0; i<8; i++)
+      {
+        OcTreeConeNode* child = static_cast<OcTreeConeNode*>(children[i]);
+        if(child != NULL)
+        { 
+          cvsum += child->getConeVoxelProbability();
+          ++c;
+        }
+      }
+    }
+    if (c > 0)
+    {
+      cvsum /= c;
+      return cvsum;
+    }
+    else { return 0; }
+  }
+
+  void OcTreeConeNode::updateCVProbChildren()
+  {
+    cv_prob = getAverageChildCVProb();
+  }
+
+/* ---------------------- TREE IMPLEMENTATION -------------------------------*/
+
+  OcTreeCone::OcTreeCone(double resolution)
+   : OccupancyOcTreeBase<OcTreeConeNode>(resolution) {
+    ocTreeConeMemberInit.ensureLinking();
+  }
+
+  OcTreeConeNode* OcTreeCone::setNodeCVProb(const OcTreeKey &key, double cv)
+  {
+    OcTreeConeNode* n = search(key);
+    if(n != 0)
+    {
+      n->setConeVoxelProbability(cv);
+    }
+    return n;
+  }
+
+  bool OcTreeCone::pruneNode(OcTreeConeNode* node)
+  {
+    // Not collapsible
+    if(!isNodeCollapsible(node)) return false;
+    // If collapsible, set cv prob
+    node->copyData(*(getNodeChild(node, 0)));
+    node->setConeVoxelProbability(node->getAverageChildCVProb());
+    // delete children
+    for (unsigned int i = 0; i < 8; i++)
+    {
+      deleteNodeChild(node, i);
+    }
+    delete[] node->children;
+    node->children = NULL;
+    return true;
+  }
+
+  bool OcTreeCone::isNodeCollapsible(const OcTreeConeNode* node) const
+  {
+    // Conditions: 1) all children exists, 2) children don't have children of
+    // their own, 3) children have same occupancy probability
+    if(!nodeChildExists(node, 0)) return false;
+
+    const OcTreeConeNode* firstChild = getNodeChild(node, 0);
+    if(nodeHasChildren(firstChild)) return false;
+
+    for(unsigned int i = 1; i < 8; i++)
+    {
+      // Compare nodes using only occupancy; ignore cv_prob for pruning
+      if(!nodeChildExists(node, i) || nodeHasChildren(getNodeChild(node, i)) ||
+         !(getNodeChild(node, i)->getValue() == firstChild->getValue()))
+        return false;
+    }
+    return true;
+  }
+
+  void OcTreeCone::updateInnerOccupancy()
+  {
+    this->updateInnerOccupancyRecurs(this->root, 0);
+  }
+
+  void OcTreeCone::updateInnerOccupancyRecurs(OcTreeConeNode* node, unsigned int depth)
+  {
+    // only recurse and update for inner nodes
+    if(nodeHasChildren(node))
+    {
+      // return early for last level
+      if (depth < this->tree_depth)
+      {
+        for(unsigned int i = 0; i < 8; i++)
+        {
+          if(nodeChildExists(node, i))
+          {
+            updateInnerOccupancyRecurs(getNodeChild(node, i), depth+1);
+          }
+        }
+      }
+      node->updateOccupancyChildren();
+      node->updateCVProbChildren();
+    }
   }
 
   // Multiply cv_prob by a scalar value

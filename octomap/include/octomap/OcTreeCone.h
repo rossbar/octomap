@@ -39,11 +39,15 @@
 #include <octomap/OccupancyOcTreeBase.h>
 
 namespace octomap {
+
+  // forward declaration for "friend"
+  class OcTreeCone;
   
   // node definition
   class OcTreeConeNode : public OcTreeNode {    
 
   public:
+    friend class OcTreeCone; // needs access to node children (inherited from AbstractOcTreeNode)
     OcTreeConeNode() : OcTreeNode(), cv_prob(0) {}
 
     // copy constructor
@@ -67,6 +71,11 @@ namespace octomap {
     inline void setConeVoxelProbability(double cv) { this->cv_prob = cv; }
     inline void updateConeVoxelProbability(double cv) { this->cv_prob += cv; }
 
+    // Handle children
+    void updateCVProbChildren();
+
+    double getAverageChildCVProb() const;
+
   protected:
     double cv_prob;
   };
@@ -85,6 +94,27 @@ namespace octomap {
 
     std::string getTreeType() const {return "OcTreeCone";}
 
+    // For manipulating tree nodes
+    virtual bool pruneNode(OcTreeConeNode* node);
+    virtual bool isNodeCollapsible(const OcTreeConeNode* node) const;
+
+    // set node color at given key or coordinate
+    OcTreeConeNode* setNodeCVProb(const OcTreeKey &key, double cv);
+    OcTreeConeNode* setNodeCVProb(float x, float y, float z, double cv)
+    {
+      OcTreeKey key;
+      if (!this->coordToKeyChecked(point3d(x, y, z), key)) return NULL;
+      return setNodeCVProb(key, cv);
+    }
+
+    // NOTE: SKIPPING INTEGRATE/AVERAGE METHODS FROM COLOROCTREE TEMPLATE
+    //   THESE METHODS WOULD BE DEFINED HERE IF NEEDED
+
+    // Update inner nodes: set cv_prob to average child cv_prob
+    void updateInnerOccupancy();
+
+    /* Math operations to perform on the cv_prob of every node in tree */
+
     // Scale cv_prob
     void scale(double s);
 
@@ -99,6 +129,7 @@ namespace octomap {
     void normalize();
 
   protected:
+    void updateInnerOccupancyRecurs(OcTreeConeNode* node, unsigned int depth);
     /**
      * Static member object which ensures that this OcTree's prototype
      * ends up in the classIDMapping only once. You need this as a 
