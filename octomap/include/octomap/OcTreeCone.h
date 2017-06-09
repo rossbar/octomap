@@ -75,6 +75,7 @@ namespace octomap {
     void updateCVProbChildren();
 
     double getAverageChildCVProb() const;
+    double getMaximumChildCVProb() const;
 
   protected:
     double cv_prob;

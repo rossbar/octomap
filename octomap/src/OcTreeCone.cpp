@@ -76,6 +76,24 @@ namespace octomap {
     else { return this->getConeVoxelProbability(); }
   }
 
+  double OcTreeConeNode::getMaximumChildCVProb() const
+  {
+    double cv = this->getConeVoxelProbability();
+    if (children != NULL)
+    {
+      for(int i = 0; i<8; i++)
+      {
+        OcTreeConeNode* child = static_cast<OcTreeConeNode*>(children[i]);
+        if(child != NULL)
+        {
+          if(child->getConeVoxelProbability() > cv)
+            { cv = child->getConeVoxelProbability(); }
+        }
+      }
+    }
+    return cv;
+  }
+
   void OcTreeConeNode::updateCVProbChildren()
   {
     cv_prob = getAverageChildCVProb();

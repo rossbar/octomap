@@ -118,7 +118,7 @@ namespace octomap {
 //            color_idx_occupied_thres =  setCubeColorRGBA(it->getColor().r, it->getColor().g, it->getColor().b, 
 //                                                         (unsigned char) (it->getOccupancy() * 255.),
 //                                                         color_idx_occupied_thres, &m_occupiedThresColorArray);
-            color_idx_occupied_thres = setCubeColorCVP(it->getAverageChildCVProb(),
+            color_idx_occupied_thres = setCubeColorCVP(it->getMaximumChildCVProb(),
                                                        color_idx_occupied_thres,
                                                        &m_occupiedThresColorArray);
           }
@@ -127,7 +127,7 @@ namespace octomap {
 //            color_idx_occupied = setCubeColorRGBA(it->getColor().r, it->getColor().g, it->getColor().b, 
 //                                                  (unsigned char)(it->getOccupancy() * 255.),
 //                                                  color_idx_occupied, &m_occupiedColorArray);
-            color_idx_occupied = setCubeColorCVP(it->getAverageChildCVProb(),
+            color_idx_occupied = setCubeColorCVP(it->getMaximumChildCVProb(),
                                                  color_idx_occupied,
                                                  &m_occupiedColorArray);
           }
