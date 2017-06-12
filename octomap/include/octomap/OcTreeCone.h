@@ -71,6 +71,8 @@ namespace octomap {
     inline void setConeVoxelProbability(double cv) { this->cv_prob = cv; }
     inline void updateConeVoxelProbability(double cv) { this->cv_prob += cv; }
 
+    inline bool isCVPSet() const { return cv_prob != 0; }
+
     // Handle children
     void updateCVProbChildren();
 
