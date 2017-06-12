@@ -279,6 +279,10 @@ void ViewerGui::showOcTree() {
     memoryUsage += it->second.octree->memoryUsage();
     num_nodes += it->second.octree->size();
     memorySingleNode = std::max(memorySingleNode, it->second.octree->memoryUsageNode());
+    // Update inner nodes
+    OcTreeCone* ct = dynamic_cast<OcTreeCone*>(it->second.octree);
+    ct->updateInnerOccupancy();
+//    std::cout << "Updated inner occupancy of " << it->second.octree->getTreeType() << std::endl;
   }
 
   m_glwidget->setSceneBoundingBox(qglviewer::Vec(minX, minY, minZ), qglviewer::Vec(maxX, maxY, maxZ));
