@@ -61,7 +61,7 @@ namespace octomap {
       for(int i = 0; i<8; i++)
       {
         OcTreeConeNode* child = static_cast<OcTreeConeNode*>(children[i]);
-        if(child != NULL)
+        if(child != NULL && child->isCVPSet())
         { 
           cvsum += child->getConeVoxelProbability();
           ++c;
@@ -104,7 +104,8 @@ namespace octomap {
     if(!isNodeCollapsible(node)) return false;
     // If collapsible, set cv prob
     node->copyData(*(getNodeChild(node, 0)));
-    node->setConeVoxelProbability(node->getAverageChildCVProb());
+    if(node->isCVPSet())
+      node->setConeVoxelProbability(node->getAverageChildCVProb());
     // delete children
     for (unsigned int i = 0; i < 8; i++)
     {
