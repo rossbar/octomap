@@ -35,6 +35,7 @@
 #define OCTOMAP_OCTREE_CONE_H
 
 #include <iostream>
+#include <vector>
 #include <octomap/OcTreeNode.h>
 #include <octomap/OccupancyOcTreeBase.h>
 
@@ -48,10 +49,12 @@ namespace octomap {
 
   public:
     friend class OcTreeCone; // needs access to node children (inherited from AbstractOcTreeNode)
-    OcTreeConeNode() : OcTreeNode(), cv_prob(0) {}
+    OcTreeConeNode() : OcTreeNode(), cv_prob(0), cones() {}
 
     // copy constructor
-    OcTreeConeNode(const OcTreeConeNode& rhs) : OcTreeNode(rhs), cv_prob(rhs.cv_prob) {}
+    OcTreeConeNode(const OcTreeConeNode& rhs) : OcTreeNode(rhs), 
+                                                cv_prob(rhs.cv_prob),
+                                                cones(rhs.cones) {}
 
     // File I/O
     std::istream& readData(std::istream &s);
@@ -64,12 +67,21 @@ namespace octomap {
     void copyData(const OcTreeConeNode& from){
       OcTreeNode::copyData(from);
       this->cv_prob = from.getConeVoxelProbability();
+      this->cones = from.getCones();
     }
       
     // Cone voxel prob
     inline double getConeVoxelProbability() const { return cv_prob; }
     inline void setConeVoxelProbability(double cv) { this->cv_prob = cv; }
-    inline void updateConeVoxelProbability(double cv) { this->cv_prob += cv; }
+    inline void updateConeVoxelProbability(double cv) 
+    { 
+      this->cv_prob += cv;
+      this->cones.push_back(cv);
+    }
+
+    // Cones
+    inline std::vector<double> getCones() const { return cones; }
+    inline void setCones(std::vector<double> c) { this->cones = c; }
 
     inline bool isCVPSet() const { return cv_prob != 0; }
 
@@ -81,6 +93,7 @@ namespace octomap {
 
   protected:
     double cv_prob;
+    std::vector<double> cones;
   };
 
 
