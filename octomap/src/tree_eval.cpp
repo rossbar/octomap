@@ -113,7 +113,7 @@ int main(int argc, char** argv) {
   // Set up data containers
   point3d center;
   double cv_prob;
-  // Traverse the whole tree
+  // Traverse the whole occupied tree
   tic = get_wall_time();
   for(it; it != end; ++it)
   {
@@ -122,7 +122,29 @@ int main(int argc, char** argv) {
   }
   toc = get_wall_time();
   dt_seconds = toc - tic;
-  printf("Time to traverse entire tree = %f\n", dt_seconds);
+  printf("Time to traverse occupied tree = %f\n\n", dt_seconds);
+
+  // Evaluate traversing the whole space
+  unsigned int num_queries = 0;
+  double xmin, ymin, zmin;
+  double xmax, ymax, zmax;
+  tree.getMetricMin(xmin, ymin, zmin);
+  tree.getMetricMax(xmax, ymax, zmax);
+  printf("Bounding box: (%.1f, %.1f), (%.1f, %.1f), (%.1f, %.1f)\n",
+          xmin, xmax, ymin, ymax, zmin, zmax);
+  printf("Querying occupancy of entire space...\n");
+  tic = get_wall_time();
+  for(double xi = xmin + dv / 2; xi < xmax; xi += dv) {
+      for(double yi = ymin + dv / 2; yi < ymax; yi += dv) {
+          for(double zi = zmin + dv / 2; zi < zmax; zi += dv) {
+              point3d query(xi, yi, zi);
+              tree.search(query);
+              num_queries += 1;
+          }
+      }
+  }
+  toc = get_wall_time();
+  printf("Done. %f sec to query %u locations.\n", (toc-tic), num_queries);
 
   return 0;
 }
