@@ -125,7 +125,8 @@ int main(int argc, char** argv) {
   printf("Time to traverse occupied tree = %f\n\n", dt_seconds);
 
   // Evaluate traversing the whole space
-  unsigned int num_queries = 0;
+  dv = 0.2;
+  unsigned int num_queries(0), num_occupied(0), num_free(0), num_unknown(0);
   double xmin, ymin, zmin;
   double xmax, ymax, zmax;
   tree.getMetricMin(xmin, ymin, zmin);
@@ -137,14 +138,25 @@ int main(int argc, char** argv) {
   for(double xi = xmin + dv / 2; xi < xmax; xi += dv) {
       for(double yi = ymin + dv / 2; yi < ymax; yi += dv) {
           for(double zi = zmin + dv / 2; zi < zmax; zi += dv) {
+              // Query point
               point3d query(xi, yi, zi);
-              tree.search(query);
+              OcTreeConeNode* node = tree.search(query);
+              // Add occupancy result to count
+              if( node != NULL )
+              {
+                  if( node->getOccupancy() > 0.5 ){ num_occupied += 1; }
+                  else{ num_free += 1; }
+              }
+              else{ num_unknown += 1; }
               num_queries += 1;
           }
       }
   }
   toc = get_wall_time();
   printf("Done. %f sec to query %u locations.\n", (toc-tic), num_queries);
+  printf("  %u (%.4f) occupied.\n", num_occupied, num_occupied / (double)num_queries);
+  printf("  %u (%.4f) free.\n", num_free, num_free / (double)num_queries);
+  printf("  %u (%.4f) unknown.\n", num_unknown, num_unknown / (double)num_queries);
 
   return 0;
 }
